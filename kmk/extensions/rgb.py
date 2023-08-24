@@ -135,8 +135,6 @@ class RGB(Extension):
 
         self.rgbw = bool(len(rgb_order) == 4)
 
-        self._substep = 0
-
         make_key(
             names=('RGB_TOG',), on_press=self._rgb_tog, on_release=handler_passthrough
         )
@@ -457,9 +455,7 @@ class RGB(Extension):
                 self.off()
 
     def _animation_step(self):
-        self._substep += self.animation_speed / 4
-        self._step = int(self._substep)
-        self._substep -= self._step
+        self._step = int(self.animation_speed / 4)
 
     def _init_effect(self):
         self.pos = 0
