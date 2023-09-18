@@ -133,6 +133,8 @@ class RGB(Extension):
         self.pixels = pixels
         self.refresh_rate = refresh_rate
 
+        self._substep = 0
+
         self.rgbw = bool(len(rgb_order) == 4)
 
         make_key(
@@ -459,7 +461,9 @@ class RGB(Extension):
                 self.off()
 
     def _animation_step(self):
-        self._step = int(self.animation_speed / 4)
+        self._substep += self.animation_speed / 4
+        self._step = int(self._substep)
+        self._substep -= self._step
 
     def _init_effect(self):
         self.pos = 0
