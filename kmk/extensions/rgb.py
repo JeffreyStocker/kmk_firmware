@@ -212,12 +212,16 @@ class RGB(Extension):
                 self.pixel_pin,
                 self.num_pixels,
                 pixel_order=self.rgb_order,
-                auto_write=not self.disable_auto_write,
             )
 
         # PixelBuffer are already iterable, can't do the usual `try: iter(...)`
         if issubclass(self.pixels.__class__, PixelBuf):
             self.pixels = (self.pixels,)
+
+        # Turn off auto_write on the backend. We handle the propagation of auto_write
+        # behaviour.
+        for pixel in self.pixels:
+            pixel.auto_write = False
 
         if self.num_pixels == 0:
             for pixels in self.pixels:
@@ -515,8 +519,10 @@ class RGB(Extension):
             self.set_hsv(self.hue, self.sat, self.val, i)
 
         # Reverse animation when a boundary is hit
-        if pos >= self.num_pixels or pos - 1 < (self.knight_effect_length * -1):
-            self.reverse_animation = not self.reverse_animation
+        if pos >= self.num_pixels:
+            self.reverse_animation = True
+        elif 1 - pos > self.knight_effect_length:
+            self.reverse_animation = False
 
         if self.reverse_animation:
             self.pos -= self._step / 2
